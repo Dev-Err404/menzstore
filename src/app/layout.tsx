@@ -1,12 +1,21 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, Inter } from "next/font/google"; 
+import { Space_Grotesk, Inter } from "next/font/google"; // <--- 1. Import fonts
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
-import Analytics from "@/components/Analytics"; // <--- 1. Import this
+import Analytics from "@/components/Analytics";
+import { Toaster } from 'react-hot-toast';
 
-// ... (keep your fonts and metadata same as before) ...
+// <--- 2. Initialize fonts (This was missing in your code)
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+
+export const metadata: Metadata = {
+  metadataBase: new URL('https://menzstore.vercel.app'),
+  title: "MENZSTORE | Curated Fashion",
+  description: "Minimalist aesthetic outfits for men.",
+};
 
 export default function RootLayout({
   children,
@@ -16,7 +25,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
       <body className={`${spaceGrotesk.variable} ${inter.variable} font-sans bg-cream text-primary antialiased flex flex-col min-h-screen`}>
-        {/* ... keep your Toaster and Navbar ... */}
+        <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />
         <Navbar />
         
         <div className="flex-grow">
@@ -25,8 +34,7 @@ export default function RootLayout({
 
         <Footer />
         <CookieBanner />
-        
-        <Analytics /> {/* <--- 2. Add this right here at the bottom */}
+        <Analytics />
       </body>
     </html>
   );
