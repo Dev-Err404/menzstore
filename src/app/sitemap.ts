@@ -2,11 +2,11 @@ import { MetadataRoute } from 'next';
 import { prisma } from '@/lib/prisma';
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = 'https://menzstore.com'; // Replace with your actual deployed domain later
+  const baseUrl = 'https://menzstore.vercel.app'; // Update this if you have a custom domain
 
-  // 1. Get all products
+  // 1. Get all products (Removed 'updatedAt')
   const products = await prisma.product.findMany({
-    select: { slug: true, updatedAt: true },
+    select: { slug: true },
   });
 
   // 2. Get all categories
@@ -16,7 +16,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const productUrls = products.map((product) => ({
     url: `${baseUrl}/products/${product.slug}`,
-    lastModified: product.updatedAt,
+    lastModified: new Date(), // Just use current date
   }));
 
   const categoryUrls = categories.map((cat) => ({
