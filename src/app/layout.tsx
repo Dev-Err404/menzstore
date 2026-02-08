@@ -4,15 +4,9 @@ import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import CookieBanner from "@/components/CookieBanner";
-import { Toaster } from 'react-hot-toast';
+import Analytics from "@/components/Analytics"; // <--- 1. Import this
 
-const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space" });
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-
-export const metadata: Metadata = {
-  title: "MENZSTORE | Curated Fashion",
-  description: "Minimalist aesthetic outfits for men.",
-};
+// ... (keep your fonts and metadata same as before) ...
 
 export default function RootLayout({
   children,
@@ -21,18 +15,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
-      {/* ADD suppressHydrationWarning HERE 👇 */}
-      <body 
-        className={`${spaceGrotesk.variable} ${inter.variable} font-sans bg-cream text-primary antialiased flex flex-col min-h-screen`} 
-        suppressHydrationWarning={true}
-      >
-        <Toaster position="bottom-right" toastOptions={{ duration: 3000 }} />
+      <body className={`${spaceGrotesk.variable} ${inter.variable} font-sans bg-cream text-primary antialiased flex flex-col min-h-screen`}>
+        {/* ... keep your Toaster and Navbar ... */}
         <Navbar />
+        
         <div className="flex-grow">
           {children}
         </div>
+
         <Footer />
         <CookieBanner />
+        
+        <Analytics /> {/* <--- 2. Add this right here at the bottom */}
       </body>
     </html>
   );
