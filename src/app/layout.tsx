@@ -12,16 +12,16 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://menzstore.vercel.app'), // Replace with your real domain
+  metadataBase: new URL('https://menzstore.vercel.app'),
   title: {
     default: "MENZSTORE | Curated Minimalist Fashion",
     template: "%s | MENZSTORE"
   },
   description: "A curated selection of aesthetic outfits for the modern creator.",
   
-  // ADD THIS SECTION 👇
   verification: {
-    google: '<meta name="google-site-verification" content="vt_RewrRZrEnGz1Mmd8OOKtZSR1NwKF8RCHnXrInb2Y" />',
+    // 👇 JUST the code, no <meta> tags!
+    google: 'vt_RewrRZrEnGz1Mmd8OOKtZSR1NwKF8RCHnXrInb2Y',
   },
 };
 
