@@ -1,19 +1,18 @@
 import { cookies } from "next/headers";
 import { loginAdmin, logoutAdmin } from "@/app/actions/admin-auth";
+import Link from "next/link"; // 👈 Added Link import
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // 1. Check if the user has the secure cookie
   const cookieStore = await cookies();
   const isAuthenticated = cookieStore.get("admin_session")?.value === "authenticated";
 
-  // 2. If NOT logged in, show the Login Screen
   if (!isAuthenticated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-cream px-4">
+      <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
         <div className="max-w-md w-full bg-white p-8 md:p-10 rounded-3xl shadow-xl border border-gray-100">
           <div className="text-center mb-8">
             <h1 className="text-3xl font-heading font-black uppercase tracking-tight text-primary">Admin Access</h1>
@@ -43,12 +42,34 @@ export default async function AdminLayout({
     );
   }
 
-  // 3. If logged in, show the Dashboard + Floating Logout Button
   return (
     <div className="relative min-h-screen flex flex-col">
       
-      {/* ----------------- NEW: Floating Logout Button ----------------- */}
-      <div className="fixed bottom-6 right-6 z-[9999]">
+      {/* ----------------- UPDATED: Floating Admin Menu ----------------- */}
+      <div className="fixed bottom-6 right-6 z-[9999] flex items-center gap-3">
+        
+        {/* Navigation Tabs */}
+        <div className="bg-white p-1.5 rounded-full shadow-2xl border border-gray-200 flex items-center">
+          <Link 
+            href="/admin" 
+            className="px-4 py-2 rounded-full text-sm font-bold text-gray-600 hover:text-black hover:bg-gray-100 transition-all"
+          >
+            Dashboard
+          </Link>
+          <Link 
+            href="/admin/calculator" 
+            className="px-4 py-2 rounded-full text-sm font-bold text-gray-600 hover:text-black hover:bg-gray-100 transition-all"
+          >
+            Calculator
+          </Link>
+
+          <Link href="/admin/visual-finder" className="px-4 py-2 rounded-full text-sm font-bold text-gray-600 hover:text-black hover:bg-gray-100 transition-all">
+            Visual Finder
+          </Link>
+          
+        </div>
+
+        {/* Logout Button */}
         <form action={logoutAdmin}>
           <button 
             type="submit" 
@@ -57,6 +78,7 @@ export default async function AdminLayout({
             Log Out ✕
           </button>
         </form>
+
       </div>
       {/* --------------------------------------------------------------- */}
 
