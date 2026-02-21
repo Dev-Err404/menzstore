@@ -1,6 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Image from "next/image";
+import ShareButtons from "@/components/ShareButtons"; // 👈 The new Social Share component
 
 // Forces Next.js to fetch live data (Fixes the 404 caching bug)
 export const dynamic = "force-dynamic";
@@ -26,10 +27,8 @@ export default async function ProductPage({ params }: Props) {
       <div className="grid grid-cols-1 lg:grid-cols-2 min-h-screen">
         
         {/* Left Side: White Background + Outfit Image */}
-        {/* FIX: Changed bg-[#f4f4f5] to bg-white to match the right side */}
         <div className="bg-white flex items-center justify-center pt-32 pb-16 px-6 lg:px-16 w-full h-full">
           
-          {/* FIX: Changed the image container placeholder to bg-white as well */}
           <div className="relative w-full max-w-[500px] aspect-[4/5] overflow-hidden rounded-3xl bg-white shadow-sm">
             {product.imageUrl ? (
               <Image
@@ -88,7 +87,6 @@ export default async function ProductPage({ params }: Props) {
                   >
                     <div className="flex items-center gap-5">
                       <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:bg-white transition-colors">
-                        {/* T-Shirt Icon SVG */}
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-[#8cd63b]">
                           <path d="M21.47 5.27L17.5 2H6.5L2.53 5.27a1.5 1.5 0 0 0-.44 1.94l1.24 2a1.5 1.5 0 0 0 2 .51L7 8.9V20a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V8.9l1.67.82a1.5 1.5 0 0 0 2-.51l1.24-2a1.5 1.5 0 0 0-.44-1.94z"/>
                         </svg>
@@ -114,7 +112,6 @@ export default async function ProductPage({ params }: Props) {
                   >
                     <div className="flex items-center gap-5">
                       <div className="w-12 h-12 rounded-full bg-gray-50 flex items-center justify-center border border-gray-100 group-hover:bg-white transition-colors">
-                        {/* Pants Icon SVG */}
                         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6 text-[#3b82f6]">
                           <path d="M5 2h14a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-8h-4v8a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1z"/>
                         </svg>
@@ -132,6 +129,9 @@ export default async function ProductPage({ params }: Props) {
 
               </div>
             </div>
+
+            {/* 👈 NEW SOCIAL SHARE BUTTONS COMPONENT */}
+            <ShareButtons title={product.name} imageUrl={product.imageUrl} />
 
           </div>
         </div>
