@@ -1,14 +1,60 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import Image from "next/image";
-import ShareButtons from "@/components/ShareButtons"; // 👈 The new Social Share component
+import ShareButtons from "@/components/ShareButtons";
+import { Metadata } from "next"; // 👈 IMPORT METADATA
 
-// Forces Next.js to fetch live data (Fixes the 404 caching bug)
 export const dynamic = "force-dynamic";
 
 type Props = {
   params: Promise<{ slug: string }>;
 };
+
+// 👇 NEW: This function builds the Link Preview Card for WhatsApp, iMessage, Twitter, etc.
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { slug } = await params;
+  const decodedSlug = decodeURIComponent(slug);
+
+  const product = await prisma.product.findUnique({
+    where: { slug: decodedSlug },
+  });
+
+  if (!product) {
+    return { title: "Product Not Found | MENZSTORE" };
+  }
+
+  // Fallback description if the product doesn't have one
+  const description = product.description || `Shop the ${product.name} at MENZSTORE. Elevate your wardrobe with curated minimalist fashion.`;
+
+  return {
+    title: `${product.name} | MENZSTORE`,
+    description: description,
+    openGraph: {
+      title: product.name,
+      description: description,
+      url: `https://menzstore.vercel.app/products/${product.slug}`,
+      siteName: "MENZSTORE",
+      images: product.imageUrl ? [
+        {
+          url: product.imageUrl,
+          width: 800,
+          height: 1000,
+          alt: product.name,
+        },
+      ] : [],
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: product.name,
+      description: description,
+      images: product.imageUrl ? [product.imageUrl] : [],
+    },
+  };
+}
+// ☝️ END OF METADATA FUNCTION
+
+// --- Your existing page UI stays exactly the same below ---
 
 export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
@@ -51,7 +97,7 @@ export default async function ProductPage({ params }: Props) {
         <div className="flex flex-col justify-center px-6 pt-16 pb-24 lg:pt-32 lg:pb-32 lg:px-24 w-full h-full bg-white">
           <div className="w-full max-w-lg mx-auto lg:mx-0">
 
-            {/* Top Info Bar (Season & Views) */}
+            {/* Top Info Bar */}
             <div className="flex flex-wrap justify-between items-center border-b border-gray-200 pb-4 mb-8 gap-4">
               <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-gray-400">
                 {product.category.name} COLLECTION
@@ -77,7 +123,7 @@ export default async function ProductPage({ params }: Props) {
 
               <div className="flex flex-col gap-4">
                 
-                {/* Upper Wear Button with T-Shirt Icon */}
+                {/* Upper Wear Button */}
                 {product.topAffiliate && (
                   <a
                     href={product.topAffiliate}
@@ -102,7 +148,7 @@ export default async function ProductPage({ params }: Props) {
                   </a>
                 )}
 
-                {/* Lower Wear Button with Pants Icon */}
+                {/* Lower Wear Button */}
                 {product.bottomAffiliate && (
                   <a
                     href={product.bottomAffiliate}
@@ -130,7 +176,6 @@ export default async function ProductPage({ params }: Props) {
               </div>
             </div>
 
-            {/* 👈 NEW SOCIAL SHARE BUTTONS COMPONENT */}
             <ShareButtons title={product.name} imageUrl={product.imageUrl} />
 
           </div>
