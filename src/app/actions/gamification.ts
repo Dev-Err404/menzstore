@@ -15,26 +15,27 @@ export async function getOrCreateVisitor() {
   }
 
   const newId = crypto.randomUUID();
-  // Create new visitor
   try {
     const newVisitor = await prisma.visitor.create({
       data: {
         cookieId: newId,
         name: `Guest-${ANIMALS[Math.floor(Math.random() * ANIMALS.length)]}-${Math.floor(Math.random() * 100)}`,
-        points: 100, // Welcome Bonus
+        points: 100, 
       }
     });
     cookieStore.set('visitor_id', newId, { secure: true, httpOnly: true, maxAge: 31536000 });
     return newVisitor;
   } catch (e) {
-    // Fallback if table doesn't exist yet (prevents crash)
-    return { name: 'Guest', points: 0, badges: [] };
+    // 👇 FIX: Added "id: null" so TypeScript stops complaining
+    return { id: null, name: 'Guest', points: 0, badges: [] };
   }
 }
 
 export async function trackAction(action: 'CLICK' | 'SHARE') {
   const visitor = await getOrCreateVisitor();
-  if (!visitor || !visitor.id) return null; // Safety check
+  
+  // Now TypeScript knows 'id' might be null, so this check is perfectly valid
+  if (!visitor || !visitor.id) return null; 
 
   let pointsToAdd = action === 'CLICK' ? 50 : 100;
   

@@ -8,15 +8,13 @@ type Props = {
 };
 
 export default async function SearchPage({ searchParams }: Props) {
-  // 1. Await params (Next.js 16 requirement)
   const { q } = await searchParams;
 
-  // 2. Handle empty search
   if (!q) {
     redirect("/");
   }
 
-  // 3. Search Products (Case-insensitive)
+  // Search Products (Case-insensitive)
   const products = await prisma.product.findMany({
     where: {
       OR: [
@@ -25,7 +23,7 @@ export default async function SearchPage({ searchParams }: Props) {
       ],
     },
     orderBy: {
-      views: "desc", // Show most popular results first
+      views: "desc",
     },
   });
 
@@ -51,9 +49,8 @@ export default async function SearchPage({ searchParams }: Props) {
           {products.map((product) => (
             <Link 
               key={product.id} 
-              // 👇 CRITICAL FIX: Safe Link to prevent crash
-              href={product.affiliateLink || product.topAffiliate || '#'} 
-              target="_blank" 
+              // 👇 FIX: Point to your internal product page, matching the rest of the site
+              href={`/products/${product.slug}`} 
               className="group block"
             >
               {/* Image Card */}
@@ -72,9 +69,9 @@ export default async function SearchPage({ searchParams }: Props) {
                   </div>
                 )}
                 
-                {/* Shop Button Overlay */}
+                {/* Overlay Badge */}
                 <div className="absolute bottom-4 right-4 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full text-xs font-bold shadow-lg opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300">
-                  SHOP NOW ↗
+                  VIEW OUTFIT ↗
                 </div>
               </div>
 
@@ -83,8 +80,6 @@ export default async function SearchPage({ searchParams }: Props) {
                 <h3 className="font-bold text-lg leading-tight group-hover:text-gray-600 transition-colors">
                   {product.name}
                 </h3>
-                {/* Optional: Show Views if you want */}
-                {/* <p className="text-xs text-gray-400">{product.views} views</p> */}
               </div>
             </Link>
           ))}

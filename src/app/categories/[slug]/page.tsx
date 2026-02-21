@@ -19,15 +19,10 @@ export default async function CategoryPage({ params, searchParams }: Props) {
 
   if (!category) return notFound();
 
-  // 2. Determine Sort Logic
-  const orderBy = sort === 'popular' 
-    ? { views: 'desc' } 
-    : { createdAt: 'desc' };
-
-  // 3. Fetch Products
+ // Fetch Products with inline sorting logic
   const products = await prisma.product.findMany({
     where: { categoryId: category.id },
-    orderBy: orderBy,
+    orderBy: sort === 'popular' ? { views: 'desc' } : { createdAt: 'desc' },
   });
 
   return (
