@@ -1,106 +1,109 @@
-import Image from 'next/image';
-import { prisma } from '@/lib/prisma';
-import { notFound } from 'next/navigation';
-import ProductCard from '@/components/ProductCard';
-import { Metadata } from 'next';
-import SocialShare from '@/components/SocialShare'; // <--- Import
+import { prisma } from "@/lib/prisma";
+import { notFound } from "next/navigation";
+import Image from "next/image";
+import Link from "next/link";
+import SmartTracker from "@/components/SmartTracker"; // 👈 New
+import RecommendedSection from "@/components/RecommendedSection"; // 👈 New
 
-// ... keep generateMetadata function ...
+type Props = {
+  params: Promise<{ slug: string }>;
+};
 
-export default async function ProductDetails({ params }: { params: Promise<{ slug: string }> }) {
-  // ... keep existing data fetching logic ...
+export default async function ProductPage({ params }: Props) {
   const { slug } = await params;
-  
-  let product;
-  try {
-     product = await prisma.product.update({
-      where: { slug },
-      data: { views: { increment: 1 } },
-    });
-  } catch (e) { return notFound(); }
 
-  const relatedProducts = await prisma.product.findMany({
-    where: { categoryId: product.categoryId, NOT: { id: product.id } },
-    take: 4,
-    orderBy: { views: 'desc' }
+  const product = await prisma.product.findUnique({
+    where: { slug },
+    include: { category: true }
   });
 
+  if (!product) return notFound();
+
+  // Note: We removed the "Similar Products" manual query because 
+  // RecommendedSection now handles the smart logic dynamically.
+
   return (
-    <div className="bg-cream min-h-screen pt-24 md:pt-32 pb-20">
-      <main className="flex flex-col md:flex-row max-w-[1400px] mx-auto gap-12 px-6">
+    <div className="min-h-screen pt-32 pb-20 px-4 md:px-8 max-w-7xl mx-auto">
+      
+      {/* 1. Activate the AI Tracker */}
+      <SmartTracker categoryId={product.categoryId} price={product.price} />
+
+      {/* Breadcrumb */}
+      <nav className="mb-8 flex items-center gap-2 text-sm text-gray-500">
+        <Link href="/" className="hover:text-black transition-colors">Home</Link>
+        <span>/</span>
+        <Link href={`/categories/${product.category.slug}`} className="hover:text-black transition-colors">
+          {product.category.name}
+        </Link>
+        <span>/</span>
+        <span className="text-black font-medium truncate max-w-[200px]">{product.name}</span>
+      </nav>
+
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-20 mb-10">
         
-        {/* LEFT: Image */}
-        <section className="w-full md:w-1/2 md:sticky md:top-32 h-fit flex justify-center">
-          <div className="relative w-full max-w-[400px] aspect-[9/16] rounded-[2.5rem] overflow-hidden shadow-2xl bg-gray-100 ring-1 ring-black/5">
+        {/* Left: Product Image */}
+        <div className="relative aspect-[4/5] w-full bg-gray-100 rounded-3xl overflow-hidden shadow-sm">
+          {product.imageUrl ? (
             <Image 
               src={product.imageUrl} 
               alt={product.name} 
               fill 
               className="object-cover"
-              priority
+              priority 
+              sizes="(max-width: 768px) 100vw, 50vw"
             />
-          </div>
-        </section>
-
-        {/* RIGHT: Details */}
-        <section className="w-full md:w-1/2 flex flex-col justify-center py-4 md:py-10">
-          <div className="max-w-lg">
-            {/* ... keep header (views/title/description) ... */}
-            <div className="flex items-center justify-between mb-8 border-b border-gray-200 pb-4">
-              <span className="font-heading font-bold text-xs uppercase tracking-[0.2em] text-secondary">Season 2026</span>
-              <span className="text-xs font-mono text-secondary bg-white border border-gray-100 px-3 py-1 rounded-full shadow-sm">👁️ {product.views} Views</span>
+          ) : (
+            <div className="flex items-center justify-center h-full text-gray-300 font-medium">
+              No Image Available
             </div>
-            
-            <h1 className="font-heading text-5xl md:text-6xl font-bold text-primary mb-8 leading-none uppercase">{product.name}</h1>
-            <p className="text-secondary text-lg mb-8 leading-relaxed font-light">{product.description || "Designed for the modern minimalist."}</p>
+          )}
+        </div>
 
-            {/* NEW: Social Share Buttons */}
-            <div className="mb-12">
-               <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-2">Share this look</p>
-               <SocialShare name={product.name} />
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex flex-col gap-4 mb-16">
-               <h3 className="font-heading text-xs font-bold uppercase tracking-widest mb-4 text-primary">Shop The Look</h3>
-               
-               <a href={product.topAffiliate} target="_blank" className="group flex items-center justify-between p-5 bg-white rounded-2xl border border-gray-100 hover:border-black hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-xl group-hover:bg-black group-hover:text-white transition-colors">👕</div>
-                    <div>
-                      <span className="block font-bold text-primary group-hover:underline decoration-1 underline-offset-4">Upper Wear</span>
-                      <span className="text-xs text-secondary">View Details</span>
-                    </div>
-                  </div>
-                  <span className="text-xl text-gray-300 group-hover:text-black group-hover:translate-x-1 transition-all">→</span>
-               </a>
-
-               <a href={product.bottomAffiliate} target="_blank" className="group flex items-center justify-between p-5 bg-white rounded-2xl border border-gray-100 hover:border-black hover:shadow-lg transition-all duration-300">
-                  <div className="flex items-center gap-5">
-                    <div className="w-12 h-12 bg-gray-50 rounded-full flex items-center justify-center text-xl group-hover:bg-black group-hover:text-white transition-colors">👖</div>
-                    <div>
-                      <span className="block font-bold text-primary group-hover:underline decoration-1 underline-offset-4">Lower Wear</span>
-                      <span className="text-xs text-secondary">View Details</span>
-                    </div>
-                  </div>
-                  <span className="text-xl text-gray-300 group-hover:text-black group-hover:translate-x-1 transition-all">→</span>
-               </a>
-            </div>
+        {/* Right: Details */}
+        <div className="flex flex-col justify-center">
+          <h1 className="font-heading text-4xl md:text-5xl font-black text-primary uppercase leading-tight mb-6">
+            {product.name}
+          </h1>
+          
+          <div className="flex items-center gap-4 mb-8">
+            <span className="text-3xl font-bold text-black tracking-tight">
+              ${product.price}
+            </span>
+            <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full uppercase tracking-wide">
+              In Stock
+            </span>
           </div>
-        </section>
-      </main>
 
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <section className="px-6 py-24 border-t border-gray-200 max-w-[1400px] mx-auto">
-          <h2 className="font-heading text-3xl font-bold mb-12">You Might Also Like</h2>
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6 md:gap-10">
-            {relatedProducts.map((p) => (
-              <ProductCard key={p.id} name={p.name} slug={p.slug} imageUrl={p.imageUrl} />
-            ))}
+          <div className="prose prose-lg text-secondary mb-10 leading-relaxed">
+            <p>
+              {product.description || "Elevate your wardrobe with this essential piece."}
+            </p>
           </div>
-        </section>
-      )}
+
+          <div className="flex flex-col gap-4 max-w-md">
+            <a 
+              href={product.affiliateLink || '#'} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="group relative w-full bg-black text-white text-lg font-bold py-4 rounded-full flex items-center justify-center gap-3 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 shadow-xl hover:shadow-2xl"
+            >
+              <span>Buy Now</span>
+              <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
+            </a>
+            <p className="text-center text-xs text-gray-400">
+              Secure checkout via partner store.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* 2. The Smart Recommendation Engine */}
+      {/* This replaces the old "Similar Products" with personalized data */}
+      <RecommendedSection currentProductId={product.id} />
+
     </div>
   );
 }

@@ -31,3 +31,13 @@ model Product {
   views          Int      @default(0) 
   createdAt      DateTime @default(now())
 }
+
+model Visitor {
+  id        String   @id @default(cuid())
+  cookieId  String   @unique  // We will store this ID in their browser
+  name      String   // e.g., "Guest-Rabbit"
+  points    Int      @default(0)
+  clicks    Int      @default(0)
+  badges    String[] // e.g., ["DEAL_HUNTER", "TRENDSETTER"]
+  createdAt DateTime @default(now())
+}
