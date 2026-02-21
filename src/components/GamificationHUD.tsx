@@ -5,27 +5,17 @@ import { getOrCreateVisitor } from '@/app/actions/gamification';
 export default function GamificationHUD() {
   const [points, setPoints] = useState(0);
   const [name, setName] = useState('Loading...');
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
-    // Poll for points every 5 seconds (Simple way to keep it updated)
-    const interval = setInterval(() => {
-        getOrCreateVisitor().then(data => {
-            if(data) {
-                setPoints(data.points);
-                setName(data.name);
-            }
-        });
-    }, 5000);
-
-    // Initial load
+    // Only load on mount, no polling to reduce server requests
     getOrCreateVisitor().then(data => {
         if(data) {
             setPoints(data.points);
             setName(data.name);
+            setIsLoaded(true);
         }
     });
-
-    return () => clearInterval(interval);
   }, []);
 
   if (points === 0) return null; // Hide if loading or no points

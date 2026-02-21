@@ -3,7 +3,8 @@ import Link from 'next/link';
 import ProductCard from '@/components/ProductCard';
 import Image from 'next/image';
 
-export const dynamic = 'force-dynamic';
+// Cache for 1 hour (3600 seconds) - products don't change that often
+export const revalidate = 3600;
 
 export default async function Home() {
   const newArrivals = await prisma.product.findMany({ take: 4, orderBy: { createdAt: 'desc' } });
