@@ -41,8 +41,7 @@ export default async function AdminDashboard({ searchParams }: Props) {
         </div>
 
         {/* Main Card */}
-        <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">
-          
+        <div className="bg-white p-5 md:p-12 rounded-[2rem] md:rounded-[2.5rem] shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-gray-100">          
           {/* Card Header & Tabs */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-12 gap-6">
             <div>
