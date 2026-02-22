@@ -4,6 +4,7 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { deleteCategory } from '@/app/actions/product-actions';
 import CategoryForm from './CategoryForm';
+import { Edit2, Trash2, Plus, ImageIcon } from 'lucide-react';
 
 type Props = {
   categories: any[];
@@ -25,59 +26,60 @@ export default function CategoriesList({ categories }: Props) {
   return (
     <div className="animate-in fade-in">
       
-      {/* Add New Category Button or Form */}
       {isAdding ? (
         <CategoryForm onCancel={() => setIsAdding(false)} />
       ) : (
         <button 
           onClick={() => setIsAdding(true)}
-          className="w-full mb-8 p-4 bg-[#fafafa] border border-gray-100 rounded-2xl text-sm font-bold text-gray-500 hover:text-black hover:border-gray-300 transition-all flex items-center justify-center gap-2"
+          className="w-full mb-8 p-4 bg-white border border-gray-200 border-dashed rounded-2xl text-sm font-bold text-gray-500 hover:text-black hover:border-gray-400 transition-all flex items-center justify-center gap-2 shadow-sm"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path></svg>
+          <Plus size={18} />
           Add New Collection
         </button>
       )}
 
-      {/* Categories List */}
       <div className="space-y-3">
         {categories.map((cat) => (
-          <div key={cat.id} className="flex items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl shadow-sm">
+          <div key={cat.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-white border border-gray-100 rounded-2xl shadow-sm gap-4">
+            
             <div className="flex items-center gap-4">
-               <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0 relative">
+               <div className="w-12 h-12 rounded-xl overflow-hidden bg-gray-50 border border-gray-100 shrink-0 relative flex items-center justify-center">
                   {cat.imageUrl ? (
                     <Image src={cat.imageUrl} alt={cat.name} fill className="object-cover" sizes="48px" />
                   ) : (
-                    <div className="flex items-center justify-center h-full text-gray-300">
-                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    </div>
+                    <ImageIcon size={20} className="text-gray-300" />
                   )}
                 </div>
               <div>
                 <h3 className="font-bold text-black text-sm">{cat.name}</h3>
-                <p className="text-xs text-gray-400 mt-0.5">{cat._count.products} Outfits</p>
+                <p className="text-xs text-gray-400 mt-0.5 font-medium">{cat._count.products} Outfits</p>
               </div>
             </div>
             
-            <div className="flex items-center gap-2">
+            <div className="flex items-center justify-end gap-2 border-t border-gray-50 sm:border-0 pt-3 sm:pt-0">
               <button 
                 onClick={() => setEditingCategory(cat)}
-                className="text-gray-500 hover:text-black px-3 py-1.5 rounded-lg text-xs font-bold transition-all hover:bg-gray-50"
+                className="flex items-center justify-center gap-1.5 text-gray-600 hover:text-black px-4 sm:px-3 py-2 bg-gray-50 sm:bg-transparent rounded-xl text-xs font-bold transition-all hover:bg-gray-100 flex-1 sm:flex-none"
               >
-                Edit
+                <Edit2 size={14} />
+                <span>Edit</span>
               </button>
+
               {cat._count.products === 0 ? (
-                <form action={deleteCategory}>
+                <form action={deleteCategory} className="flex-1 sm:flex-none">
                   <input type="hidden" name="id" value={cat.id} />
-                  <button type="submit" className="text-red-400 hover:text-red-600 text-xs font-bold px-3 py-1.5 rounded-lg hover:bg-red-50 transition-all">
-                    Delete
+                  <button type="submit" className="w-full flex items-center justify-center gap-1.5 text-red-500 hover:text-red-700 px-4 sm:px-3 py-2 bg-red-50 sm:bg-transparent rounded-xl text-xs font-bold transition-all hover:bg-red-100">
+                    <Trash2 size={14} />
+                    <span>Delete</span>
                   </button>
                 </form>
               ) : (
-                <span className="text-[10px] text-gray-300 uppercase tracking-widest font-bold px-3 py-1.5 cursor-not-allowed">
+                <span className="flex-1 sm:flex-none text-center text-[10px] text-gray-400 uppercase tracking-widest font-bold px-4 py-2 sm:px-3 bg-gray-50 rounded-xl cursor-not-allowed">
                   In Use
                 </span>
               )}
             </div>
+
           </div>
         ))}
       </div>
