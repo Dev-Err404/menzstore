@@ -12,10 +12,12 @@ export default async function AllCategoriesPage() {
   });
 
   return (
-    <main className="min-h-screen bg-white px-6 py-20">
+    // 👇 FIX 1: Changed 'py-20' to 'pt-40 pb-20' to push content below the floating header
+    <main className="min-h-screen bg-white px-6 pt-40 pb-20">
       <div className="max-w-7xl mx-auto">
         <header className="mb-16 border-b border-zinc-100 pb-10">
-          <h1 className="text-5xl font-bold tracking-tighter text-zinc-900 mb-4">
+          {/* 👇 FIX 2: Added 'text-4xl md:text-5xl' so it fits better on small screens */}
+          <h1 className="text-4xl md:text-5xl font-bold tracking-tighter text-zinc-900 mb-4">
             Collections
           </h1>
           <p className="text-zinc-500 text-lg max-w-md">
@@ -23,7 +25,7 @@ export default async function AllCategoriesPage() {
           </p>
         </header>
 
-        {/* Category Grid */}
+        {/* Category Grid - EXACTLY as you had it */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {categories.length > 0 ? (
             categories.map((cat) => (
