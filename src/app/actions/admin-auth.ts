@@ -7,7 +7,7 @@ export async function loginAdmin(formData: FormData) {
   const password = formData.get('password');
   
   // We check against your environment variable, or use 'admin123' as a backup
-  const correctPassword = process.env.ADMIN_PASSWORD || 'admin123';
+  const correctPassword = process.env.ADMIN_PASSWORD;
 
   if (password === correctPassword) {
     const cookieStore = await cookies();
